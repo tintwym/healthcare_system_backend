@@ -1,0 +1,23 @@
+# Build
+target/
+*.class
+*.jar
+*.war
+!**/src/main/**/resources/**
+
+# Local secrets / IDE
+.env
+.env.*
+!.env.example
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+.DS_Store
+
+# Logs / OS
+*.log
+hs_err_pid*
+replay_pid*
