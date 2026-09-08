@@ -1,14 +1,14 @@
-# Render Blueprint — native Java (no Docker)
-# Repo root = this backend folder (healthcare_system_backend)
+# Render Blueprint — Docker required (Render has no native Java runtime)
+# https://render.com/docs/docker — JVM languages must use Docker
 
 services:
   - type: web
     name: medicore-api
-    runtime: java
-    plan: free
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
     branch: development_v1
-    buildCommand: chmod +x mvnw && ./mvnw -B -DskipTests package
-    startCommand: java -XX:MaxRAMPercentage=75.0 -jar target/medicore-backend-0.1.0.jar
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: PORT

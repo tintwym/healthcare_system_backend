@@ -1,16 +1,22 @@
-# Deploy Medicore API on Render (no Docker)
+# Deploy Medicore API on Render
 
-Repo: `healthcare_system_backend` (this folder is the git root).
+## Why Docker?
 
-## Render settings (manual or Blueprint)
+[Render has no native Java runtime](https://render.com/docs/docker).  
+JVM apps (Spring Boot) **must** use Docker. Local/dev can still run with `./mvnw` + Neon (no Docker on your Mac).
+
+## Render settings
 
 | Setting | Value |
 |---------|--------|
-| Language / Runtime | **Java** (not Docker) |
+| Repository | `healthcare_system_backend` |
 | Branch | `development_v1` |
-| Build command | `chmod +x mvnw && ./mvnw -B -DskipTests package` |
-| Start command | `java -XX:MaxRAMPercentage=75.0 -jar target/medicore-backend-0.1.0.jar` |
+| Runtime | **Docker** |
+| Dockerfile path | `./Dockerfile` |
+| Docker context | `.` |
 | Health check | `/health` |
+
+Leave Build/Start commands **empty** (Dockerfile handles them).
 
 ## Environment
 
@@ -24,13 +30,23 @@ JWT_SECRET=<long-random>
 PORT=4110
 ```
 
-## Vercel
-
-`VITE_API_URL=https://<your-service>.onrender.com` → redeploy web.
-
-## Local run (also no Docker)
+## Push & deploy
 
 ```bash
-# uses backend/.env (Neon)
-./mvnw spring-boot:run
+cd backend
+git add Dockerfile .dockerignore render.yaml RENDER.md
+git commit -m "Restore Dockerfile — required for Render Java"
+git push
+```
+
+Then Render → **Manual Deploy** (clear build cache once).
+
+## Vercel
+
+`VITE_API_URL=https://<service>.onrender.com` (Config type) → Redeploy web.
+
+## Local (no Docker)
+
+```bash
+./mvnw spring-boot:run   # uses .env → Neon
 ```

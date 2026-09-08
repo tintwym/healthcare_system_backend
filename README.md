@@ -2,7 +2,7 @@
 
 Patient-first REST API — Java 21 + Spring Boot 3.4 + JPA + JWT + **Neon** Postgres.
 
-Port **4110**. Deploy on Render **without Docker** — see [`RENDER.md`](RENDER.md).
+Port **4110**. Render deploy uses **Docker** (Render has no native Java) — see [`RENDER.md`](RENDER.md). Local run needs only Maven + Neon.
 
 ## Requirements
 
