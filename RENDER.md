@@ -20,6 +20,14 @@ Leave Build/Start commands **empty** (Dockerfile handles them).
 
 ## Environment
 
+**Required.** Empty keys (`sync: false` in `render.yaml` with no value pasted) cause:
+
+`Unable to determine Dialect without JDBC metadata`
+
+because the container has no `.env` and falls back to localhost Postgres.
+
+In **Render → Service → Environment**, set:
+
 ```
 DATABASE_URL=jdbc:postgresql://ep-floral-violet-b3rn442u-pooler.c-4.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
 DATABASE_USERNAME=neondb_owner
@@ -29,6 +37,9 @@ APP_URL=https://medicore-health-mm.vercel.app
 JWT_SECRET=<long-random>
 PORT=4110
 ```
+
+Use the **pooled** Neon host (`-pooler`) and `sslmode=require`.  
+Do **not** leave `DATABASE_URL` blank. After saving, **Manual Deploy**.
 
 ## Push & deploy
 

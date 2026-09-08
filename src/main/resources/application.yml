@@ -5,7 +5,10 @@ spring:
     url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:5433/medicore}
     username: ${DATABASE_USERNAME:medicore}
     password: ${DATABASE_PASSWORD:medicore}
+    hikari:
+      connection-timeout: 20000
   jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     open-in-view: false
@@ -13,6 +16,7 @@ spring:
       hibernate:
         jdbc:
           time_zone: UTC
+
 
 server:
   port: ${PORT:4110}
