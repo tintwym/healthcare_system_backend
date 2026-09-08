@@ -1,0 +1,33 @@
+# Render Blueprint — native Java (no Docker)
+# Repo root = this backend folder (healthcare_system_backend)
+
+services:
+  - type: web
+    name: medicore-api
+    runtime: java
+    plan: free
+    branch: development_v1
+    buildCommand: chmod +x mvnw && ./mvnw -B -DskipTests package
+    startCommand: java -XX:MaxRAMPercentage=75.0 -jar target/medicore-backend-0.1.0.jar
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: "4110"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USERNAME
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: CORS_ORIGIN
+        value: https://medicore-health-mm.vercel.app
+      - key: APP_URL
+        value: https://medicore-health-mm.vercel.app
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        value: mailto:care@medicore.local
