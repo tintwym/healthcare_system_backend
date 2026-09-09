@@ -54,7 +54,7 @@ Then Render → **Manual Deploy** (clear build cache once).
 
 ## Vercel
 
-`VITE_API_URL=https://<service>.onrender.com` (Config type) → Redeploy web.
+`VITE_API_URL=https://healthcare-system-backend-quzy.onrender.com` (Config type) → Redeploy web.
 
 ## Local (no Docker)
 
