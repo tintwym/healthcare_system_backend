@@ -19,10 +19,77 @@ public class DataSeeder {
       InvoiceRepository invoices,
       MessageRepository messages,
       RefillRequestRepository refills,
+      VisitSummaryRepository visitSummaries,
+      MedicationDoseLogRepository doseLogs,
       PasswordEncoder encoder) {
     return args -> {
-      if (users.count() > 0) return;
+      if (users.count() == 0) {
+        seedFresh(
+            users, patients, appointments, invoices, messages, refills, encoder);
+      }
+      seedCareExtras(patients, visitSummaries, doseLogs);
+    };
+  }
 
+  private static void seedCareExtras(
+      PatientRepository patients,
+      VisitSummaryRepository visitSummaries,
+      MedicationDoseLogRepository doseLogs) {
+    if (!patients.existsById("pat-001")) return;
+
+    if (visitSummaries.count() == 0) {
+      VisitSummary avs = new VisitSummary();
+      avs.setId("avs-demo-001");
+      avs.setPatientId("pat-001");
+      avs.setAppointmentId(null);
+      avs.setDate("2026-09-01");
+      avs.setAuthor("Dr. Aye Myat Thu, MD");
+      avs.setAuthorRole("doctor");
+      avs.setTitle("Cardiology follow-up summary");
+      avs.setSummaryBody(
+          "Stable hypertension and mild asthma. Blood pressure improving on Lisinopril. "
+              + "No chest pain at rest. Continue current regimen and home BP log.");
+      avs.setInstructions(
+          "Take Lisinopril 10 mg every morning. Log BP twice daily. Echo in 4 weeks. "
+              + "Use Albuterol inhaler as needed before exercise.");
+      avs.setWarningSigns(
+          "Return or message care team if chest pain, severe shortness of breath, "
+              + "or systolic BP over 150 with headache.");
+      avs.setStatus("finalized");
+      avs.setCreatedAt(Instant.parse("2026-09-01T10:30:00Z"));
+      visitSummaries.save(avs);
+    }
+
+    if (doseLogs.count() == 0) {
+      MedicationDoseLog d1 = new MedicationDoseLog();
+      d1.setId("dose-demo-001");
+      d1.setPatientId("pat-001");
+      d1.setMedicationId("med-1");
+      d1.setMedicationName("Lisinopril");
+      d1.setStatus("taken");
+      d1.setNotes("Morning dose");
+      d1.setLoggedAt(Instant.parse("2026-09-08T01:10:00Z"));
+      doseLogs.save(d1);
+
+      MedicationDoseLog d2 = new MedicationDoseLog();
+      d2.setId("dose-demo-002");
+      d2.setPatientId("pat-001");
+      d2.setMedicationId("med-3");
+      d2.setMedicationName("Atorvastatin");
+      d2.setStatus("taken");
+      d2.setLoggedAt(Instant.parse("2026-09-07T15:40:00Z"));
+      doseLogs.save(d2);
+    }
+  }
+
+  private static void seedFresh(
+      UserAccountRepository users,
+      PatientRepository patients,
+      AppointmentRepository appointments,
+      InvoiceRepository invoices,
+      MessageRepository messages,
+      RefillRequestRepository refills,
+      PasswordEncoder encoder) {
       String patientPassword = encoder.encode("patient123");
       String staffPassword = encoder.encode("staff123");
 
@@ -260,7 +327,6 @@ public class DataSeeder {
       System.out.println(
           "Seeded Medicore demo data: 5 patients, 10 staff, appointments/invoices/messages/refills. "
               + "Patients: */patient123 · Staff: */staff123 (e.g. thiri.supyae@gmail.com, khin.sandar@medicore.mm)");
-    };
   }
 
   private static Patient buildThiri() {

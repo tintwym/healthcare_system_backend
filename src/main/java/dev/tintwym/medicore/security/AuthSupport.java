@@ -17,7 +17,11 @@ public final class AuthSupport {
   public static String patientScopeOrNull() {
     AuthUser user = requireUser();
     if (user.getRole().name().equals("patient")) {
-      return user.getPatientId();
+      String patientId = user.getPatientId();
+      if (patientId == null || patientId.isBlank()) {
+        throw new ApiException(403, "Patient account is not linked");
+      }
+      return patientId;
     }
     return null;
   }
