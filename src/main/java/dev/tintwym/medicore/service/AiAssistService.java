@@ -93,11 +93,11 @@ public class AiAssistService {
         provider = "gemini";
       } catch (Exception ex) {
         log.warn("Gemini call failed, using fallback: {}", ex.getMessage());
-        reply = fallbackReply(intent, message, chartContext, user);
+        reply = fallbackReply(intent, message, chartContext, user, "gemini_error");
         provider = "fallback";
       }
     } else {
-      reply = fallbackReply(intent, message, chartContext, user);
+      reply = fallbackReply(intent, message, chartContext, user, "missing_key");
       provider = "fallback";
     }
 
@@ -359,9 +359,13 @@ public class AiAssistService {
     return textNode.asText().trim();
   }
 
-  private String fallbackReply(String intent, String message, String chart, AuthUser user) {
+  private String fallbackReply(String intent, String message, String chart, AuthUser user, String reason) {
     boolean patient = user.getRole() == UserRole.patient;
     String lower = message.toLowerCase(Locale.ROOT);
+    String footer =
+        "missing_key".equals(reason)
+            ? "\n\n(Set GEMINI_API_KEY on the API server for full generative replies.)"
+            : "\n\n(Gemini request failed — check the API key and server logs. Using Medicore rule-based assistant.)";
 
     if ("explain_vitals".equals(intent) || lower.contains("vital") || lower.contains("blood pressure") || lower.contains("heart rate")) {
       String flagged = chart.contains("[FLAGGED]") ? " At least one recent reading was flagged as abnormal — share that with your care team." : "";
@@ -373,10 +377,11 @@ public class AiAssistService {
             + "- Heart rate: often ~60–100 bpm at rest.\n"
             + "- SpO₂: usually ≥95% on room air for many adults.\n"
             + "- Temperature: ~97.8–99.1°F (about 36.6–37.3°C).\n\n"
-            + "This is not a diagnosis. If you have chest pain, severe shortness of breath, fainting, or stroke symptoms, seek emergency care now.\n\n"
-            + "(AI provider key not configured — using Medicore rule-based assistant.)";
+            + "This is not a diagnosis. If you have chest pain, severe shortness of breath, fainting, or stroke symptoms, seek emergency care now."
+            + footer;
       }
-      return "I do not see recent vitals in context yet. Log a reading in Monitor (or ask staff to record one), then ask again.\n\n(AI provider key not configured — using Medicore rule-based assistant.)";
+      return "I do not see recent vitals in context yet. Log a reading in Monitor (or ask staff to record one), then ask again."
+          + footer;
     }
 
     if ("draft_summary".equals(intent)) {
@@ -408,8 +413,8 @@ public class AiAssistService {
     if ("billing_help".equals(intent) || lower.contains("bill") || lower.contains("invoice") || lower.contains("copay")) {
       if (chart.contains("Billing (recent)")) {
         return "I can help explain statements using your recent invoices in context: amounts, status, and patient share. "
-            + "Open Billing in the app to pay an open balance. For insurance disputes, contact the billing desk with your MRN and invoice date.\n\n"
-            + "(AI provider key not configured — using Medicore rule-based assistant.)";
+            + "Open Billing in the app to pay an open balance. For insurance disputes, contact the billing desk with your MRN and invoice date."
+            + footer;
       }
       return "No invoice context loaded yet. Open Billing, then ask again about a specific statement.";
     }
@@ -419,8 +424,8 @@ public class AiAssistService {
         + ". I can help explain vitals, draft care-team messages, clarify billing language"
         + (patient ? "" : ", and draft after-visit summaries")
         + ". Ask a specific question, or tap a quick action.\n\n"
-        + "Reminder: advisory only — not emergency care or a medical diagnosis.\n\n"
-        + "(Set GEMINI_API_KEY on the API server for full generative replies.)";
+        + "Reminder: advisory only — not emergency care or a medical diagnosis."
+        + footer;
   }
 
   private static String joinOrNone(List<String> items) {
