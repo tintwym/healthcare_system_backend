@@ -13,6 +13,7 @@ import dev.tintwym.medicore.security.AuthUser;
 import dev.tintwym.medicore.domain.AuditEvent;
 import dev.tintwym.medicore.domain.UserRole;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +29,37 @@ public class PatientsController {
     this.audits = audits;
   }
 
+  @GetMapping
+  @Transactional(readOnly = true)
+  public List<Map<String, Object>> list() {
+    AuthUser user = AuthSupport.requireUser();
+    if (user.getRole() == UserRole.patient) {
+      throw new ApiException(403, "Staff only");
+    }
+    return patients.findAll().stream()
+        .map(p -> {
+          hydrate(p);
+          return mapPatient(p);
+        })
+        .toList();
+  }
+
   @GetMapping("/me")
   @Transactional(readOnly = true)
   public Map<String, Object> me(@RequestParam(required = false) String patientId) {
     String id = AuthSupport.patientScopeOr(patientId);
+    Patient p = patients.findById(id).orElseThrow(() -> new ApiException(404, "Patient not found"));
+    hydrate(p);
+    return mapPatient(p);
+  }
+
+  @GetMapping("/{id}")
+  @Transactional(readOnly = true)
+  public Map<String, Object> get(@PathVariable String id) {
+    AuthUser user = AuthSupport.requireUser();
+    if (user.getRole() == UserRole.patient && !id.equals(user.getPatientId())) {
+      throw new ApiException(403, "Forbidden");
+    }
     Patient p = patients.findById(id).orElseThrow(() -> new ApiException(404, "Patient not found"));
     hydrate(p);
     return mapPatient(p);
