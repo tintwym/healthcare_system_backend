@@ -1,5 +1,6 @@
 package dev.tintwym.medicore;
 
+import dev.tintwym.medicore.config.AiProperties;
 import dev.tintwym.medicore.config.MedicoreProperties;
 import dev.tintwym.medicore.config.PushProperties;
 import org.springframework.boot.SpringApplication;
@@ -9,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableScheduling
-@EnableConfigurationProperties({PushProperties.class, MedicoreProperties.class})
+@EnableConfigurationProperties({PushProperties.class, MedicoreProperties.class, AiProperties.class})
 public class MedicoreBackendApplication {
   public static void main(String[] args) {
     SpringApplication.run(MedicoreBackendApplication.class, args);

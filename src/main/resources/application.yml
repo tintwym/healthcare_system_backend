@@ -32,6 +32,10 @@ medicore:
     vapid-public-key: ${VAPID_PUBLIC_KEY:BOG1zGSwGchL4mT1ThqrAfs3o12rUaIC-pkogOec6z9eco8f-EcqS5yCIwiRPnSOHbi2oihv-QGHz3NF9VVitf0}
     vapid-private-key: ${VAPID_PRIVATE_KEY:8rgByt73ue30jBdXYLSUlUiBsFI2NP0b5eUnZC4r_Zk}
     vapid-subject: ${VAPID_SUBJECT:mailto:care@medicore.local}
+  ai:
+    enabled: ${AI_ENABLED:true}
+    gemini-api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-2.0-flash}
 
 logging:
   level:
