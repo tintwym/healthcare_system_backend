@@ -32,7 +32,7 @@ public class SecurityConfig {
         .cors(Customizer.withDefaults())
         .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/health", "/auth/login", "/push/vapid-public-key").permitAll()
+            .requestMatchers("/health", "/auth/login", "/auth/register", "/push/vapid-public-key").permitAll()
             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             .anyRequest().authenticated())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
